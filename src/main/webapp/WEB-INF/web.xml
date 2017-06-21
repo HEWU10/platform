@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+    <display-name>realname</display-name>
+
+    <listener>
+        <listener-class>
+            org.springframework.web.context.request.RequestContextListener
+        </listener-class>
+    </listener>
+
+    <!-- 配置springmvc的转发控制器-->
+    <servlet>
+        <servlet-name>rn-servlet</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>classpath:applicationContext.xml</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>rn-servlet</servlet-name>
+        <url-pattern>/rest/*</url-pattern>
+    </servlet-mapping>
+
+    <!--配置spring字符过滤器-->
+    <filter>
+        <filter-name>SetCharacterEncoding</filter-name>
+        <filter-class>
+            org.springframework.web.filter.CharacterEncodingFilter
+        </filter-class>
+        <init-param>
+            <param-name>encoding</param-name>
+            <param-value>UTF-8</param-value>
+        </init-param>
+        <init-param>
+            <param-name>forceEncoding</param-name>
+            <param-value>true</param-value>
+        </init-param>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>SetCharacterEncoding</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <!--指定外部服务接口访问控制过滤器-->
+    <filter>
+        <!-- 指定过滤器 -->
+        <filter-name>entryFilter</filter-name>
+        <filter-class>com.timevale.esign.entryframework.entry.filter.EntryFilter</filter-class>
+        <init-param>
+            <param-name>controller</param-name>
+            <param-value>com.timevale.esign.entryframework.entry.ifauth.ctrl.InterfaceController</param-value>
+        </init-param>
+        <init-param>
+            <param-name>excatcher</param-name>
+            <param-value>com.timevale.esign.realname.entry.ServiceExceptionHandler</param-value>
+        </init-param>
+    </filter>
+
+    <filter-mapping>
+        <!-- 拦截的URL -->
+        <filter-name>entryFilter</filter-name>
+        <url-pattern>/rest/external/*</url-pattern>
+    </filter-mapping>
+
+    <!--指定内部服务无需签名验签过滤器-->
+    <filter>
+        <!-- 指定过滤器 -->
+        <filter-name>InternalFilter</filter-name>
+        <filter-class>com.timevale.esign.entryframework.entry.filter.EntryFilter</filter-class>
+        <init-param>
+            <param-name>controller</param-name>
+            <param-value>com.timevale.esign.realname.entry.AccessNothingController</param-value>
+        </init-param>
+        <init-param>
+            <param-name>excatcher</param-name>
+            <param-value>com.timevale.esign.realname.entry.ServiceExceptionHandler</param-value>
+        </init-param>
+    </filter>
+
+    <filter-mapping>
+        <!-- 拦截的URL -->
+        <filter-name>InternalFilter</filter-name>
+        <url-pattern>/rest/internal/*</url-pattern>
+    </filter-mapping>
+
+    <!--指定无需任何访问控制的过滤器-->
+    <filter>
+        <!-- 指定过滤器 -->
+        <filter-name>NothingFilter</filter-name>
+        <filter-class>com.timevale.esign.entryframework.entry.filter.EntryFilter</filter-class>
+        <init-param>
+            <param-name>controller</param-name>
+            <param-value>com.timevale.esign.realname.entry.AccessNothingController</param-value>
+        </init-param>
+        <init-param>
+            <param-name>excatcher</param-name>
+            <param-value>com.timevale.esign.realname.entry.PayDoneLLExceptionHandler</param-value>
+        </init-param>
+    </filter>
+
+    <filter-mapping>
+        <!-- 拦截的URL -->
+        <filter-name>NothingFilter</filter-name>
+        <url-pattern>/rest/normal/*</url-pattern>
+    </filter-mapping>
+
+
+    <welcome-file-list>
+        <welcome-file>index.jsp</welcome-file>
+    </welcome-file-list>
+
+</web-app>
